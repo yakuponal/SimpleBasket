@@ -8,5 +8,10 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleBasket.Infrastructure\SimpleBasket.Infrastructure.csproj" />
+    <ProjectReference Include="..\SimpleBasket.Persistence\SimpleBasket.Persistence.csproj" />
+  </ItemGroup>
+
 
 </Project>

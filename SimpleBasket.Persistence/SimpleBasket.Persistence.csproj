@@ -4,4 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleBasket.Application\SimpleBasket.Application.csproj" />
+    <ProjectReference Include="..\SimpleBasket.Infrastructure\SimpleBasket.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
