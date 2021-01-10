@@ -14,7 +14,6 @@ namespace SimpleBasket.Application.Services
     {
         private readonly ISimpleBasketDbContext _simpleBasketDbContext;
         private readonly IProductService _productService;
-        private BasketDto _basketDto;
         private IList<Basket> _basket;
 
         public BasketService(ISimpleBasketDbContext simpleBasketDbContext, IProductService productService)

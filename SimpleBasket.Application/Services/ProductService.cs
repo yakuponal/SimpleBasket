@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SimpleBasket.Application.Baskets.Commands.AddProductToBasket;
 using SimpleBasket.Application.Common.Interfaces;
 using SimpleBasket.Application.Common.Models;
 using System.Collections.Generic;
@@ -16,6 +15,29 @@ namespace SimpleBasket.Application.Services
         public ProductService(ISimpleBasketDbContext simpleBasketDbContext)
         {
             _simpleBasketDbContext = simpleBasketDbContext;
+        }
+
+        public async Task<IList<ProductDto>> GetProducts()
+        {
+            var products = await _simpleBasketDbContext.ProductDetails
+                .Join(_simpleBasketDbContext.Products,
+                    productDetail => productDetail.ProductId,
+                    product => product.ProductId,
+                    (productDetail, product) => new ProductDto
+                    {
+                        ProductId = product.ProductId,
+                        ProductDetailId = productDetail.ProductDetailId,
+                        ProductName = product.ProductName,
+                        ProductDetailName = productDetail.ProductDetailName,
+                        Description = productDetail.Description,
+                        Price = productDetail.Price,
+                        Stock = productDetail.Stock
+                    }).ToListAsync();
+
+            foreach (var product in products)
+                product.ProductOptions = await GetProductOptions(product.ProductDetailId);
+
+            return products;
         }
 
         public async Task<ProductDto> GetProduct(int productDetailId) =>
