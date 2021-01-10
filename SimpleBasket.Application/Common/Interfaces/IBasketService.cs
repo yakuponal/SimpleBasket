@@ -9,5 +9,6 @@ namespace SimpleBasket.Application.Common.Interfaces
     {
         Task<BasketDto> GetBasketProductList(GetBasketProductListQuery getBasketProductListQuery);
         Task<BasketDto> AddProductToBasket(AddProductToBasketCommand addProductToBasketCommand);
+        Task<int> GetQuantityOfProductInBasket(int customerId, int productDetailId);
     }
 }

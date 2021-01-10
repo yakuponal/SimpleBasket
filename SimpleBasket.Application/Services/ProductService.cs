@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SimpleBasket.Application.Baskets.Commands.AddProductToBasket;
 using SimpleBasket.Application.Common.Interfaces;
 using SimpleBasket.Application.Common.Models;
 using System.Collections.Generic;
@@ -75,17 +76,17 @@ namespace SimpleBasket.Application.Services
             return product;
         }
 
-        public async Task<bool> CheckProductForAddToBasket(int productDetailId, int quantity)
+        public async Task<bool> CheckProductForAddToBasket(AddProductToBasketCommand addProductToBasketCommand, int quantityOfAlreadyProductInBasket)
         {
             if (_product == null)
-                _product = await GetProduct(productDetailId);
+                _product = await GetProduct(addProductToBasketCommand.ProductDetailId);
 
             //Check is the desired product available
             if (_product == null)
                 return false;
 
             //Check if the item is in stock
-            if (!CheckProductStock(quantity))
+            if (!CheckProductStock(addProductToBasketCommand, quantityOfAlreadyProductInBasket))
                 return false;
 
             //Check does the product have a valid price
@@ -95,7 +96,8 @@ namespace SimpleBasket.Application.Services
             return true;
         }
 
-        private bool CheckProductStock(int quantity) => _product.Stock >= quantity;
+        private bool CheckProductStock(AddProductToBasketCommand addProductToBasketCommand, int quantityOfAlreadyProductInBasket) =>
+            _product.Stock > quantityOfAlreadyProductInBasket + addProductToBasketCommand.Quantity;
 
         private bool CheckProductPrice() => _product.Price > 0;
     }

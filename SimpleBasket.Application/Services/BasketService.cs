@@ -15,7 +15,8 @@ namespace SimpleBasket.Application.Services
         private readonly ISimpleBasketDbContext _simpleBasketDbContext;
         private readonly IProductService _productService;
         private readonly ICustomerService _customerService;
-        private IList<Basket> _basket;
+        private IList<Basket> _baskets;
+        private Basket _basket;
 
         public BasketService(ISimpleBasketDbContext simpleBasketDbContext, IProductService productService, ICustomerService customerService)
         {
@@ -54,18 +55,22 @@ namespace SimpleBasket.Application.Services
             if (addProductToBasketCommand == null)
                 return null;
 
+            if (addProductToBasketCommand.Quantity <= 0)
+                return null;
+
             //Check if this customer exists
             bool isCustomerExist = await _customerService.IsCustomerExist(addProductToBasketCommand.CustomerId);
             if (!isCustomerExist)
                 return null;
 
             //Check if the product can be added to the basket
-            bool checkProductForAddToBasket = await _productService.CheckProductForAddToBasket(addProductToBasketCommand.ProductDetailId, addProductToBasketCommand.Quantity);
+            var quantityOfProductInBasket = await GetQuantityOfProductInBasket(addProductToBasketCommand.CustomerId, addProductToBasketCommand.ProductDetailId);
+            bool checkProductForAddToBasket = await _productService.CheckProductForAddToBasket(addProductToBasketCommand, quantityOfProductInBasket);
             if (!checkProductForAddToBasket)
                 return null;
 
             //Check if the product is already in the basket
-            var checkIfProductAlreadyInBasket = await CheckIfProductAlreadyInBasket(addProductToBasketCommand);
+            var checkIfProductAlreadyInBasket = await CheckIfProductAlreadyInBasket(addProductToBasketCommand.CustomerId, addProductToBasketCommand.ProductDetailId);
 
             //If it already exists, increase the quantity, if not add to basket
             if (checkIfProductAlreadyInBasket)
@@ -78,8 +83,10 @@ namespace SimpleBasket.Application.Services
 
         private async Task IncreaseProductQuantityInBasket(AddProductToBasketCommand addProductToBasketCommand)
         {
-            var basketProduct = _basket.Where(x => x.ProductDetailId == addProductToBasketCommand.ProductDetailId).FirstOrDefault();
-            basketProduct.Quantity += addProductToBasketCommand.Quantity;
+            if (_basket == null)
+                await InitBasket(addProductToBasketCommand.CustomerId, addProductToBasketCommand.ProductDetailId);
+
+            _basket.Quantity += addProductToBasketCommand.Quantity;
             await _simpleBasketDbContext.SaveChangesAsync();
         }
 
@@ -96,18 +103,26 @@ namespace SimpleBasket.Application.Services
             await _simpleBasketDbContext.SaveChangesAsync();
         }
 
-        private async Task<bool> CheckIfProductAlreadyInBasket(AddProductToBasketCommand addProductToBasketCommand)
+        private async Task<bool> CheckIfProductAlreadyInBasket(int customerId, int productDetailId)
         {
             if (_basket == null)
-                await InitBasket(addProductToBasketCommand.CustomerId);
+                await InitBasket(customerId, productDetailId);
 
-            if (_basket != null && _basket.Count == 0)
-                return false;
-
-            return _basket.Any(x => x.ProductDetailId == addProductToBasketCommand.ProductDetailId);
+            return _basket != null;
         }
 
         private async Task InitBasket(int customerId) =>
-            _basket = await _simpleBasketDbContext.Baskets.Where(x => x.CustomerId == customerId).ToListAsync();
+            _baskets = await _simpleBasketDbContext.Baskets.Where(x => x.CustomerId == customerId).ToListAsync();
+
+        private async Task InitBasket(int customerId, int productDetailId) =>
+            _basket = await _simpleBasketDbContext.Baskets.Where(x => x.CustomerId == customerId && x.ProductDetailId == productDetailId).FirstOrDefaultAsync();
+
+        public async Task<int> GetQuantityOfProductInBasket(int customerId, int productDetailId)
+        {
+            if (_basket == null)
+                await InitBasket(customerId, productDetailId);
+
+            return _basket != null ? _basket.Quantity : 0;
+        }
     }
 }

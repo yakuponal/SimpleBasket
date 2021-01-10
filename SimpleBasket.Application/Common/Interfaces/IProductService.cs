@@ -1,4 +1,5 @@
-﻿using SimpleBasket.Application.Common.Models;
+﻿using SimpleBasket.Application.Baskets.Commands.AddProductToBasket;
+using SimpleBasket.Application.Common.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +11,6 @@ namespace SimpleBasket.Application.Common.Interfaces
         Task<ProductDto> GetProduct(int productDetailId);
         Task<ProductDto> GetProductWithOptions(int productDetailId);
         Task<IList<ProductOptionDto>> GetProductOptions(int productDetailId);
-        Task<bool> CheckProductForAddToBasket(int productDetailId, int quantity);
+        Task<bool> CheckProductForAddToBasket(AddProductToBasketCommand addProductToBasketCommand, int quantityOfAlreadyProductInBasket);
     }
 }
