@@ -50,24 +50,24 @@ namespace SimpleBasket.Application.Services
             };
         }
 
-        public async Task<BasketDto> AddProductToBasket(AddProductToBasketCommand addProductToBasketCommand)
+        public async Task<OperationResult<BasketDto>> AddProductToBasket(AddProductToBasketCommand addProductToBasketCommand)
         {
             if (addProductToBasketCommand == null)
-                return null;
+                return OperationResult<BasketDto>.Result(null, "Invalid request!");
 
             if (addProductToBasketCommand.Quantity <= 0)
-                return null;
+                return OperationResult<BasketDto>.Result(null, "The requested quantity is invalid!");
 
             //Check if this customer exists
             bool isCustomerExist = await _customerService.IsCustomerExist(addProductToBasketCommand.CustomerId);
             if (!isCustomerExist)
-                return null;
+                return OperationResult<BasketDto>.Result(null, "Customer not found!");
 
             //Check if the product can be added to the basket
             var quantityOfProductInBasket = await GetQuantityOfProductInBasket(addProductToBasketCommand.CustomerId, addProductToBasketCommand.ProductDetailId);
-            bool checkProductForAddToBasket = await _productService.CheckProductForAddToBasket(addProductToBasketCommand, quantityOfProductInBasket);
-            if (!checkProductForAddToBasket)
-                return null;
+            var checkProductForAddToBasket = await _productService.CheckProductForAddToBasket(addProductToBasketCommand, quantityOfProductInBasket);
+            if (!checkProductForAddToBasket.Data)
+                return OperationResult<BasketDto>.Result(null, checkProductForAddToBasket.Message);
 
             //Check if the product is already in the basket
             var checkIfProductAlreadyInBasket = await CheckIfProductAlreadyInBasket(addProductToBasketCommand.CustomerId, addProductToBasketCommand.ProductDetailId);
@@ -78,7 +78,9 @@ namespace SimpleBasket.Application.Services
             else
                 await AddNewProductToBasket(addProductToBasketCommand);
 
-            return await GetBasketProductList(new GetBasketProductListQuery(addProductToBasketCommand.CustomerId));
+            return OperationResult<BasketDto>.Result(
+                await GetBasketProductList(new GetBasketProductListQuery(addProductToBasketCommand.CustomerId)), 
+                "The product has been added to the basket!"); ;
         }
 
         private async Task IncreaseProductQuantityInBasket(AddProductToBasketCommand addProductToBasketCommand)

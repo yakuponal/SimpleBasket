@@ -22,8 +22,9 @@ namespace SimpleBasket.Application.Baskets.Handlers.AddProductToBasket
 
             return new ServiceResult<BasketDto>
             {
-                Success = basket != null,
-                Data = basket
+                Success = basket.Data != null,
+                Message = basket.Message,
+                Data = basket.Data
             };
         }
     }

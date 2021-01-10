@@ -76,24 +76,24 @@ namespace SimpleBasket.Application.Services
             return product;
         }
 
-        public async Task<bool> CheckProductForAddToBasket(AddProductToBasketCommand addProductToBasketCommand, int quantityOfAlreadyProductInBasket)
+        public async Task<OperationResult<bool>> CheckProductForAddToBasket(AddProductToBasketCommand addProductToBasketCommand, int quantityOfAlreadyProductInBasket)
         {
             if (_product == null)
                 _product = await GetProduct(addProductToBasketCommand.ProductDetailId);
 
             //Check is the desired product available
             if (_product == null)
-                return false;
+                return OperationResult<bool>.Result(false, "Product not found!");
 
             //Check if the item is in stock
             if (!CheckProductStock(addProductToBasketCommand, quantityOfAlreadyProductInBasket))
-                return false;
+                return OperationResult<bool>.Result(false, "Stock is insufficient!");
 
             //Check does the product have a valid price
             if (!CheckProductPrice())
-                return false;
+                return OperationResult<bool>.Result(false, "The requested product price is invalid!");
 
-            return true;
+            return OperationResult<bool>.Result(true, string.Empty);
         }
 
         private bool CheckProductStock(AddProductToBasketCommand addProductToBasketCommand, int quantityOfAlreadyProductInBasket) =>

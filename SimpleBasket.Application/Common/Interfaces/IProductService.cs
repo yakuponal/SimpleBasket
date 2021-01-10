@@ -11,6 +11,6 @@ namespace SimpleBasket.Application.Common.Interfaces
         Task<ProductDto> GetProduct(int productDetailId);
         Task<ProductDto> GetProductWithOptions(int productDetailId);
         Task<IList<ProductOptionDto>> GetProductOptions(int productDetailId);
-        Task<bool> CheckProductForAddToBasket(AddProductToBasketCommand addProductToBasketCommand, int quantityOfAlreadyProductInBasket);
+        Task<OperationResult<bool>> CheckProductForAddToBasket(AddProductToBasketCommand addProductToBasketCommand, int quantityOfAlreadyProductInBasket);
     }
 }

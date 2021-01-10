@@ -8,7 +8,7 @@ namespace SimpleBasket.Application.Common.Interfaces
     public interface IBasketService
     {
         Task<BasketDto> GetBasketProductList(GetBasketProductListQuery getBasketProductListQuery);
-        Task<BasketDto> AddProductToBasket(AddProductToBasketCommand addProductToBasketCommand);
+        Task<OperationResult<BasketDto>> AddProductToBasket(AddProductToBasketCommand addProductToBasketCommand);
         Task<int> GetQuantityOfProductInBasket(int customerId, int productDetailId);
     }
 }

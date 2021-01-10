@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace SimpleBasket.Application.Common.Models
+﻿namespace SimpleBasket.Application.Common.Models
 {
     public class ServiceResult<T> where T : class
     {
