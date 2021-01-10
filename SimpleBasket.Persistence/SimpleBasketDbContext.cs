@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using SimpleBasket.Application.Common.Interfaces;
 using SimpleBasket.Domain.Entities;
+using System.Threading;
+using System.Threading.Tasks;
 
 #nullable disable
 
@@ -26,6 +26,8 @@ namespace SimpleBasket.Persistence
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<ProductDetail> ProductDetails { get; set; }
         public virtual DbSet<ProductOption> ProductOptions { get; set; }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken()) => base.SaveChangesAsync(cancellationToken);
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

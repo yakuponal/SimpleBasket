@@ -18,10 +18,12 @@ namespace SimpleBasket.Application.Baskets.Handlers.AddProductToBasket
 
         public async Task<ServiceResult<BasketDto>> Handle(AddProductToBasketCommand request, CancellationToken cancellationToken)
         {
+            var basket = await _basketService.AddProductToBasket(request);
+
             return new ServiceResult<BasketDto>
             {
-                Success = true,
-                Data = await _basketService.AddProductToBasket(request)
+                Success = basket != null,
+                Data = basket
             };
         }
     }
