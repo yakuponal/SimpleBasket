@@ -1,13 +1,14 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using SimpleBasket.Application.Common.Interfaces;
 using SimpleBasket.Domain.Entities;
 
 #nullable disable
 
 namespace SimpleBasket.Persistence
 {
-    public partial class SimpleBasketDbContext : DbContext
+    public partial class SimpleBasketDbContext : DbContext, ISimpleBasketDbContext
     {
         public SimpleBasketDbContext()
         {

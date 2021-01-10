@@ -20,8 +20,8 @@ namespace SimpleBasket.API
 
                 try
                 {
-                    var northwindContext = services.GetRequiredService<SimpleBasketDbContext>();
-                    northwindContext.Database.Migrate();
+                    var simpleBasketDbContext = services.GetRequiredService<SimpleBasketDbContext>();
+                    simpleBasketDbContext.Database.Migrate();
                 }
                 catch (Exception ex)
                 {
