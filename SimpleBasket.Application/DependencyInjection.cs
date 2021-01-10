@@ -13,6 +13,7 @@ namespace SimpleBasket.Application
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddScoped<IBasketService, BasketService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICustomerService, CustomerService>();
 
             return services;
         }

@@ -14,12 +14,14 @@ namespace SimpleBasket.Application.Services
     {
         private readonly ISimpleBasketDbContext _simpleBasketDbContext;
         private readonly IProductService _productService;
+        private readonly ICustomerService _customerService;
         private IList<Basket> _basket;
 
-        public BasketService(ISimpleBasketDbContext simpleBasketDbContext, IProductService productService)
+        public BasketService(ISimpleBasketDbContext simpleBasketDbContext, IProductService productService, ICustomerService customerService)
         {
             _simpleBasketDbContext = simpleBasketDbContext;
             _productService = productService;
+            _customerService = customerService;
         }
 
         public async Task<BasketDto> GetBasketProductList(GetBasketProductListQuery getBasketProductListQuery)
@@ -52,9 +54,13 @@ namespace SimpleBasket.Application.Services
             if (addProductToBasketCommand == null)
                 return null;
 
+            //Check if this customer exists
+            bool isCustomerExist = await _customerService.IsCustomerExist(addProductToBasketCommand.CustomerId);
+            if (!isCustomerExist)
+                return null;
+
             //Check if the product can be added to the basket
             bool checkProductForAddToBasket = await _productService.CheckProductForAddToBasket(addProductToBasketCommand.ProductDetailId, addProductToBasketCommand.Quantity);
-
             if (!checkProductForAddToBasket)
                 return null;
 
